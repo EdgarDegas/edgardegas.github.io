@@ -1,0 +1,15 @@
+# For documentation on this file, see:
+# https://github.com/riggraz/no-style-please#customize-the-menu
+
+entries:
+  - title: posts
+    post_list:
+      limit: 5
+      show_more: true
+      show_more_text: Read more...
+      show_more_url: archive
+    
+  - title: <a href='https://github.com/EdgarDegas' target="_blank">GitHub - Edgar Degas</a>
+
+  - title: rss
+    url: feed.xml
