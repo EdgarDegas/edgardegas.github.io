@@ -115,7 +115,11 @@ void* _performMethod(const char* funcName, const void* onObject) {
 
 得到了很多结果，比如这个 struct 的初始化函数的信息：
 
-> Function: id = {0x100000471}, name = "MyDSBridgeExample.ABCDEFGHIJKLMNOPQRSTUVWXYZ.init() -> MyDSBridgeExample.ABCDEFGHIJKLMNOPQRSTUVWXYZ", mangled = "$s17MyDSBridgeExample26ABCDEFGHIJKLMNOPQRSTUVWXYZVACycfC"
+> Function: id = {0x100000471}, 
+>
+> name = "MyDSBridgeExample.ABCDEFGHIJKLMNOPQRSTUVWXYZ.init() -> MyDSBridgeExample.ABCDEFGHIJKLMNOPQRSTUVWXYZ", 
+>
+> mangled = "$s17MyDSBridgeExample26ABCDEFGHIJKLMNOPQRSTUVWXYZVACycfC"
 
 由于我是在一个叫 MyDSBridgeExample 的项目里操作的，因此名字前面的 module 名是这样的。可以看到这个 `init()` 最终的 mangle 结果是：“$s17MyDSBridgeExample26ABCDEFGHIJKLMNOPQRSTUVWXYZVACycfC”。
 
@@ -134,9 +138,15 @@ struct ABCDEFGHIJKLMNOPQRSTUVWXYZ {
 
 查找符号：
 
-> Function: id = {0x100000495}, name = "MyDSBridgeExample.ABCDEFGHIJKLMNOPQRSTUVWXYZ.f1() -> ()", mangled = "$s17MyDSBridgeExample26ABCDEFGHIJKLMNOPQRSTUVWXYZV2f1yyF"
+> name = "MyDSBridgeExample.ABCDEFGHIJKLMNOPQRSTUVWXYZ.f1() -> ()", 
 >
-> Function: id = {0x1000004b5}, name = "MyDSBridgeExample.ABCDEFGHIJKLMNOPQRSTUVWXYZ.f2() -> ()", mangled = "$s17MyDSBridgeExample26ABCDEFGHIJKLMNOPQRSTUVWXYZV2f2yyF"
+> mangled = "$s17MyDSBridgeExample26ABCDEFGHIJKLMNOPQRSTUVWXYZV2f1yyF"
+>
+> 
+>
+> name = "MyDSBridgeExample.ABCDEFGHIJKLMNOPQRSTUVWXYZ.f2() -> ()", 
+>
+> mangled = "$s17MyDSBridgeExample26ABCDEFGHIJKLMNOPQRSTUVWXYZV2f2yyF"
 
 可以看到，2f2 和 2f1 之前都有一个 V，那么这个 V 应该是指 struct。
 
@@ -201,9 +211,7 @@ unsafeBitCast(ABCDEFGHIJKLMNOPQRSTUVWXYZ.f1, to: Int.self)
 
 # Swift Macro
 
-事实上，苹果已经提供了 Mangling 规则的文档：https://github.com/apple/swift/blob/main/docs/ABI/Mangling.rst
-
-那么根据这个文档，应该是可以做出来一个 mangle 函数的。
+事实上，苹果已经提供了 [Mangling 规则的文档](https://github.com/apple/swift/blob/main/docs/ABI/Mangling.rst)，根据这个文档，应该是可以做出来一个 mangle 函数的。
 
 下一个问题是，怎么动态地获得函数的从模块到类型（甚至嵌套类型）到函数的完整信息？不用 Runtime 的话，好像也没有什么好办法吧。
 
