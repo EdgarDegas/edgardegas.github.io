@@ -25,7 +25,7 @@ Swift 前几年出了一个 `Mirror` API，确实一定程度上提供了这样�
 dlsym(RTLD_DEFAULT, <function name>)
 ```
 
-那么，现在的思路就是通过传入函数的名称，找到一个函数指针，调用并返回它的返回值：
+那么，现在的思路就是通过传入函数的名称，找到它的指针，调用并返回它的返回值：
 
 ```c
 void* _performMethod(const char* funcName, const void* onObject) {
@@ -63,7 +63,7 @@ void* _performMethod(const char* funcName, const void* onObject) {
 
 第一个，`dlsym` 函数是谁提供的？在 Windows 中，我们是无法调用这个函数的，而应该改成 `<windows.h>` 中的某个方法。在微软[ Xamarin 的相关文档中](https://learn.microsoft.com/en-us/dotnet/api/objcruntime.dlfcn.dlsym)可以看到，它被归类到了 `ObjcRuntime.Dlfcn` 下。
 
-另一个问题在上面这篇文档中也有提到：
+另一个问题在上面微软这篇文档中也有提到：
 
 > The symbol name passed to dlsym() is the name used in C source code.
 >
@@ -75,9 +75,9 @@ void* _performMethod(const char* funcName, const void* onObject) {
 
 # Runtime 库
 
-发现了一个库，叫做 Runtime，提供纯 Swift 的反射功能：https://github.com/wickwirew/Runtime
+发现了一个库，叫做 Runtime，提供纯 Swift 的反射功能：[wickwirew/Runtime](https://github.com/wickwirew/Runtime)
 
-苹果 Swift 官方在公布 `Mirror` 的同时（也可能不是同时），也提供了 Swift 的类型元数据的存放位置，可以看[这篇文档](https://github.com/apple/swift/blob/main/docs/ABI/TypeMetadata.rst)，让我们往下拉，看到 Nominal Type Descriptor 一节：
+苹果 Swift 官方在公布 `Mirror` 的同时（也可能不是同时），也提供了 Swift 的类型元数据的存放位置，可以看[这篇文档](https://github.com/apple/swift/blob/main/docs/ABI/TypeMetadata.rst)，在文档的 Nominal Type Descriptor 一节：
 
 > The metadata records for class, struct, and enum types contain a pointer to a **nominal type descriptor**, which contains basic information about the nominal type such as its name, members, and metadata layout. For a generic type, one nominal type descriptor is shared for all instantiations of the type. The layout is as follows:
 >
@@ -88,7 +88,7 @@ void* _performMethod(const char* funcName, const void* onObject) {
 >
 > - The mangled **name** is referenced as a null-terminated C string at **offset 1**. This name includes no bound generic parameters.
 
-看到了吗？ 类型的 mangled name 就存储在这个 descriptor 中，就是从它的第1个比特开始读，读到 null 为止的这个字符串。
+类型的 mangled name 就存储在这个 descriptor 中，就是从它的第1个比特开始读，读到 null 为止的这个字符串。
 
 但遗憾的是，文档也标注了：
 
@@ -101,7 +101,7 @@ void* _performMethod(const char* funcName, const void* onObject) {
 (String) "Example"
 ```
 
-再说，最终我们要取到的是函数的符号名，盯着类型的也没用。
+再说，最终我们要取到的是**函数**的符号名，拿到类型的元数据也没用。
 
 # LLDB 符号表
 
@@ -113,7 +113,7 @@ void* _performMethod(const char* funcName, const void* onObject) {
 (lldb) image lookup -rvs ABCDEFGHIJKLMNOPQRSTUVWXYZ
 ```
 
-得到了很多结果，比如这个 struct 的初始化函数的信息：
+得到了很多结果，比如它的初始化函数的信息：
 
 > Function: id = {0x100000471}, 
 >
@@ -154,7 +154,7 @@ f1 和 f2 只有名字不同，其余都相同的情况下，得到的后缀都�
 
 # Dl_Info
 
-这时候，在 wickwirew/Runtime 的 Issue 里，我看到另一种解决办法：
+这时候，在 wickwirew/Runtime 的 Issue 里，我看到一种取到类型的 mangle 名的方式：
 
 ```swift
 func mangledName(for type: Any.Type) -> String {
@@ -165,7 +165,7 @@ func mangledName(for type: Any.Type) -> String {
 }
 ```
 
-试着传入了类型：
+我试着传入了一个类型对象：
 
 ```
 (lldb)  p mangledName(for: ABCDEFGHIJKLMNOPQRSTUVWXYZ.self)
@@ -183,7 +183,7 @@ func mangledName(for type: Any.Type) -> String {
 (String) "$sytN"
 ```
 
-那么能不能传入函数呢？在这之前，首先函数不是一种 `Any.Type`，那么传入函数的类型呢？
+现在就看能不能传入函数。首先函数不是一种 `Any.Type`，只能先试试对函数取类型。
 
 ```
 (lldb)  p mangledName(for: type(of: ABCDEFGHIJKLMNOPQRSTUVWXYZ.f1))
@@ -194,18 +194,18 @@ func mangledName(for type: Any.Type) -> String {
 (String) "_ZL21InitialAllocationPool"
 ```
 
-不论传入的是哪个函数，最后得到的都是 _ZL21InitialAllocationPool。
+不论传入的是哪个函数的类型对象，最后得到的都是 _ZL21InitialAllocationPool。
 
-再说了，函数的类型，似乎不会和它属于哪个类型有关吧。
+再说了，函数的类型，似乎不会跟什么模块、类型、命名域之类的有关吧。
 
-弄了半天，一是连函数存储在哪里还不知道，二是 Swift 函数和 C 指针之间似乎并不兼容：
+弄了半天，一是连函数具体存储在哪里还不知道，二是 Swift 函数和 C 指针之间似乎并不兼容：
 
 ```
 unsafeBitCast(ABCDEFGHIJKLMNOPQRSTUVWXYZ.f1, to: Int.self)
 // Fatal error: Can't unsafeBitCast between types of different sizes
 ```
 
-按照论坛上的说法，只有 `@convention(c)` 的函数才可以和指针互相兼容：
+按照 Swift 论坛上的说法，只有 `@convention(c)` 的函数或者说闭包才可以和指针互相兼容：
 
 > There isn't any way to bitcast a pointer into a Swift function value. If you can make it so that the pointer uses the C calling convention, can you cast to a `@convention(c)` type instead?
 
@@ -213,8 +213,12 @@ unsafeBitCast(ABCDEFGHIJKLMNOPQRSTUVWXYZ.f1, to: Int.self)
 
 事实上，苹果已经提供了 [Mangling 规则的文档](https://github.com/apple/swift/blob/main/docs/ABI/Mangling.rst)，根据这个文档，应该是可以做出来一个 mangle 函数的。
 
-下一个问题是，怎么动态地获得函数的从模块到类型（甚至嵌套类型）到函数的完整信息？不用 Runtime 的话，好像也没有什么好办法吧。
+那就假设 mangle 函数已经写好了。问题就变成了，怎么动态地获得函数的从模块到类型（甚至嵌套类型）到函数本身的完整信息？
 
-也许可以用 Swift Macro？在编译前就可以获取到一个类型的所有的函数信息。如果决定了要用 Macro 的话，其实完全不需要反射。
+不用 Runtime 的话，好像也没有什么好办法吧。
+
+也许可以用 Swift Macro？使用 macro 的话，在编译前我们就可以获取到任意信息。
+
+可是如果决定了要用 Macro 的话，其实完全不需要反射。
 
 最后，用 Swift Macro，我做成了这个库：[DSBridge-Swift](https://github.com/EdgarDegas/DSBridge-Swift)，用一种简单粗暴的方式，在静态时获取函数名、参数类型、返回类型等全部信息。
