@@ -12,8 +12,11 @@ layout: default
   <h1>{{ page.title }}</h1>
 
   {{ content }}
-
-<a href="https://github.com/EdgarDegas/edgardegas.github.io/discussions/new?category=anything">任意发表你的看法</a>
+  <hr/>
+  {%- if page.disc_url -%}
+  <p><a href="{{ page.disc_url }}">点赞本文或发表评论</a></p>
+  {%- endif -%}
+  <p><a href="https://github.com/EdgarDegas/edgardegas.github.io/discussions/new?category=anything">任意发表你的看法</a></p>
 </article>
 
 <script type="text/javascript" src="/assets/js/hljs.js"></script>

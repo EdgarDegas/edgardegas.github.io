@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 记录一次对 Swift 动态的探索
+disc_url: https://github.com/EdgarDegas/edgardegas.github.io/discussions/2
 ---
 
 # 背景
@@ -222,7 +223,3 @@ unsafeBitCast(ABCDEFGHIJKLMNOPQRSTUVWXYZ.f1, to: Int.self)
 可是如果决定了要用 Macro 的话，其实完全不需要反射。
 
 最后，用 Swift Macro，我做成了这个库：[DSBridge-Swift](https://github.com/EdgarDegas/DSBridge-Swift)，用一种简单粗暴的方式，在静态时获取函数名、参数类型、返回类型等全部信息。
-
----
-
-[点赞本文或发表评论](https://github.com/EdgarDegas/edgardegas.github.io/discussions/2)
