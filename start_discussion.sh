@@ -23,10 +23,10 @@ title=$(grep -m 1 "^title: " "$1" | sed 's/^title: //')
 # discussion.body
 if [[ $title =~ ^[[:ascii:]]*$ ]]; then
   # 如果是ASCII字符，构造body
-  body="Leave a comment on [${title}](${url})"
+  body="Leave your comment on [${title}](${url})."
 else
   # 如果不是ASCII字符，构造body
-  body="请在此处发表对[${title}](${url})的评论"
+  body="请在此处发表对[${title}](${url})的评论。"
 fi
 
 graphql_request=$(cat <<EOF
