@@ -9,7 +9,10 @@ entries:
       show_more_text: Read more...
       show_more_url: archive
     
-  - title: <a href='https://github.com/EdgarDegas' target="_blank">GitHub - Edgar Degas</a>
+  - title: <a href='https://github.com/EdgarDegas' target='_blank'>github</a>
+    entries:
+      - title: <a href='https://github.com/EdgarDegas/DSBridge-Swift/' target='_blank'>DSBridge-Swift</a>, delivering method calls between Swift and JavaScript.
+      - title: <a href='https://github.com/EdgarDegas/Slyderin/' target='_blank'>Slyderin</a>, an iOS-16-styled slider.
 
   - title: rss
     url: feed.xml
