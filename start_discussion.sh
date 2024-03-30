@@ -53,7 +53,9 @@ response=$(curl -s -X POST \
     -d "{\"query\": $graphql_request}" \
     https://api.github.com/graphql)
 
-url_value=$(echo "$response" | awk -F '"' '/url/ {print $4}')
+url_value=$(echo "$response" | jq -r '.data.createDiscussion.discussion.url')
+
+echo $url_value
 
 if grep -q "^disc_url: " "$file_path"; then
   sed -i "s|^disc_url: .*|disc_url: $url_value|" "$file_path"

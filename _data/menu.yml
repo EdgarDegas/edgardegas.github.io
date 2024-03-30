@@ -11,7 +11,7 @@ entries:
     
   - title: <a href='https://github.com/EdgarDegas' target='_blank'>github</a>
     entries:
-      - title: <a href='https://github.com/EdgarDegas/DSBridge-Swift/' target='_blank'>DSBridge-Swift</a>, delivering method calls between Swift and JavaScript.
+      - title: <a href='https://edgardegas.github.io/dsbridge-swift-intro.html' target='_blank'>DSBridge-Swift</a>, delivering method calls between Swift and JavaScript.
       - title: <a href='https://github.com/EdgarDegas/Slyderin/' target='_blank'>Slyderin</a>, an iOS-16-styled slider.
 
   - title: rss
