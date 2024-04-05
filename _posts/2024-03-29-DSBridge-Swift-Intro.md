@@ -1,6 +1,8 @@
 ---
 layout: post
 title: DSBridge-Swift
+description: 大家好，今天介绍我新写的一个开源库：DSBridge-Swift，它是 DSBridge-iOS 的一个 Swift 翻新版，解决了它的无法应对更新的问题，实现了纯静态的方法派发，提供了高度的可定制性。
+locale: zh_Hans
 disc_url: https://github.com/EdgarDegas/edgardegas.github.io/discussions/11
 category: repo
 ---

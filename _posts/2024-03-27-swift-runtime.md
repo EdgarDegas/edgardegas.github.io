@@ -1,6 +1,8 @@
 ---
 layout: post
 title: 记录一次对 Swift 动态的探索
+description: 有不少 iOS 的库依赖 Objective-C 的动态特性，这对于 Swift 用户来说并不舒适。有没有办法在纯 Swift 的基础上，进行一定的反射呢？
+locale: zh_Hans
 disc_url: https://github.com/EdgarDegas/edgardegas.github.io/discussions/2
 ---
 
