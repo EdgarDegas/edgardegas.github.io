@@ -94,7 +94,7 @@ enum EnumInterface {
 
 想用 SwiftyJSON 或者 HandyJSON？想修改传参格式？没问题，修改 `jsonSerializer` 就行。
 
-还有比如 DSBridge-Swift 仅在开发环境中打印 JSON 序列化报错的详情；生产环境中，具体的对象或 JSON 字符串会被替换为`*hashed*`或者一个空对象。如果你希望改变这一行为，你可以自己定义错误类型，而不使用 `DSBridge.JSON` 之下的。
+还有比如 DSBridge-Swift 仅在开发环境中打印 JSON 序列化报错的详情；生产环境中，具体的对象或 JSON 字符串会被替换为`*hashed*`或者一个空对象。如果你希望改变这一行为，你可以自己定义错误类型，而不使用 `DSBridge.Error.JSON` 之下的。
 
 ## Native 调用 JS
 
