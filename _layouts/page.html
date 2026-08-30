@@ -4,6 +4,12 @@ layout: default
 
 {%-include back_link.html-%}
 
-<h1>{{ page.title }}</h1>
+<article class="article-shell">
+  <header class="article-header page-title">
+    <h1>{{ page.title }}</h1>
+  </header>
 
-{{ content }}
+  <div class="prose">
+    {{ content }}
+  </div>
+</article>

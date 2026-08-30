@@ -4,19 +4,26 @@ layout: default
 
 {%-include back_link.html-%}
 
-<article>
-  <p class="post-meta">
-    <time datetime="{{ page.date }}">{{ page.date | date: site.theme_config.date_format }}</time>
-  </p>
-  
-  <h1>{{ page.title }}</h1>
+<article class="article-shell">
+  <header class="article-header">
+    <div class="article-meta">
+      <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: site.theme_config.date_format }}</time>
+    </div>
+    <h1>{{ page.title }}</h1>
+  </header>
 
-  {{ content }}
-  <hr/>
-  {%- if page.disc_url -%}
-  <p><a href="{{ page.disc_url }}">点赞本文或发表评论</a></p>
-  {%- endif -%}
-  <p><a href="https://github.com/EdgarDegas/edgardegas.github.io/discussions/new?category=anything">任意发表你的看法</a></p>
+  <div class="prose">
+    {{ content }}
+  </div>
+
+  <footer class="article-footer">
+    <div class="article-actions">
+      {%- if page.disc_url -%}
+        <a class="button button-primary" href="{{ page.disc_url }}">点赞本文或发表评论</a>
+      {%- endif -%}
+      <a class="button button-secondary" href="https://github.com/EdgarDegas/edgardegas.github.io/discussions/new?category=anything">任意发表你的看法</a>
+    </div>
+  </footer>
 </article>
 
 <script type="text/javascript" src="/assets/js/hljs.js"></script>

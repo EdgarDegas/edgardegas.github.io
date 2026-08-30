@@ -1,13 +1,35 @@
 ---
 layout: default
 ---
-<header>
-  <h1>{{ site.title }}</h1>
-  {%-if site.theme_config.show_description-%}
-    <p>{{ site.description }}</p>
-  {%-endif-%}
-</header>
 
-{%-include menu_item.html collection=site.data.menu.entries-%}
+<section class="home-heading">
+  <h1>{{ site.title }}</h1>
+</section>
+
+<section class="content-section" id="posts" aria-labelledby="posts-heading">
+  <div class="section-heading">
+    <h2 id="posts-heading">posts</h2>
+    <a class="text-link" href="{{ "/archive.html" | relative_url }}">Read more... <span aria-hidden="true">→</span></a>
+  </div>
+  {%- include post_list.html limit=5 -%}
+</section>
+
+<section class="content-section" id="github" aria-labelledby="github-heading">
+  <div class="section-heading">
+    <h2 id="github-heading"><a href="https://github.com/EdgarDegas" target="_blank" rel="noreferrer">github</a></h2>
+  </div>
+  <div class="project-grid">
+    <a class="project-card" href="https://edgardegas.github.io/dsbridge-swift-intro.html" target="_blank" rel="noreferrer">
+      <span class="external-icon" aria-hidden="true">↗</span>
+      <h3>DSBridge-Swift</h3>
+      <p>delivering method calls between Swift and JavaScript.</p>
+    </a>
+    <a class="project-card" href="https://github.com/EdgarDegas/Slyderin/" target="_blank" rel="noreferrer">
+      <span class="external-icon" aria-hidden="true">↗</span>
+      <h3>Slyderin</h3>
+      <p>an iOS-16-styled slider.</p>
+    </a>
+  </div>
+</section>
 
 {{ content }}

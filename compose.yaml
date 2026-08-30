@@ -1,0 +1,29 @@
+services:
+  blog:
+    build:
+      context: .
+    init: true
+    environment:
+      JEKYLL_ENV: development
+    ports:
+      - "4000:4000"
+      - "35729:35729"
+    volumes:
+      - .:/srv/jekyll
+      - jekyll-cache:/srv/jekyll/.jekyll-cache
+      - jekyll-site:/srv/jekyll/_site
+    healthcheck:
+      test:
+        - CMD
+        - ruby
+        - -rnet/http
+        - -e
+        - 'exit(Net::HTTP.get_response(URI("http://127.0.0.1:4000/")).is_a?(Net::HTTPSuccess) ? 0 : 1)'
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 20s
+
+volumes:
+  jekyll-cache:
+  jekyll-site:
