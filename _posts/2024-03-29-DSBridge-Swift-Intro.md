@@ -5,6 +5,7 @@ description: 大家好，今天介绍我新写的一个开源库：DSBridge-Swif
 locale: zh_Hans
 disc_url: https://github.com/EdgarDegas/edgardegas.github.io/discussions/11
 category: repo
+art: bridge
 ---
 
 大家好，今天介绍我新写的一个开源库：[DSBridge-Swift](https://github.com/EdgarDegas/DSBridge-Swift)，它是 DSBridge-iOS 的一个 Swift 翻新版。

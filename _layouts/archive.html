@@ -2,12 +2,6 @@
 layout: default
 ---
 
-{%-include back_link.html-%}
-
-<section class="page-hero">
-  <h1>{{ page.title }}</h1>
-</section>
-
 <section class="archive-list" aria-label="文章列表">
-  {%-include post_list.html category=page.which_category-%}
+  {%-include post_list.html category=page.which_category variant="table"-%}
 </section>

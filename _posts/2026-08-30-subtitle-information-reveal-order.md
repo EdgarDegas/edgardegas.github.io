@@ -2,8 +2,10 @@
 layout: post
 title: 字幕翻译中的信息揭示顺序
 disc_url: https://github.com/EdgarDegas/edgardegas.github.io/discussions/13
-description: 字幕不仅要准确传达内容，也应尽量让译文中的人物身份、证据与关键事实按照原文的顺序出现
+description: "字幕不仅要准确传达内容，也要让人物身份、证据与关键事实按照原文的顺序出现。英语的后置修饰语和句末信息，在中文里常被提前到句首，结果是台词还没有说出答案，字幕已经泄露了剧情。拆开前置定语，使用“有人”“有张照片”等暂时性表达，可以让字幕重新跟上台词与表演的揭示节奏。"
 locale: zh_Hans
+category: life
+art: reveal
 ---
 
 看电影时，观众会随着台词和画面，一点点了解发生了什么。台词说到哪里，事实才揭示到哪里。这就是信息揭示顺序。

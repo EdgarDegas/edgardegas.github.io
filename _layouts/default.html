@@ -2,19 +2,6 @@
 <html lang="{{ page.lang | default: "zh-Hans" }}">
   {%- include head.html -%}
   <body>
-    <header class="site-header">
-      <div class="site-nav shell">
-        <a class="site-brand" href="{{ "/" | relative_url }}" aria-label="返回首页">
-          <span>{{ site.author }}</span>
-        </a>
-        <nav class="site-links" aria-label="主导航">
-          <a href="{{ "/archive.html" | relative_url }}"{% if page.url == "/archive.html" %} aria-current="page"{% endif %}>posts</a>
-          <a href="https://github.com/EdgarDegas" target="_blank" rel="noreferrer">github</a>
-          <a href="{{ "/feed.xml" | relative_url }}">rss</a>
-        </nav>
-      </div>
-    </header>
-
     <main class="site-main" aria-label="主要内容">
       <div class="shell">
         {{ content }}
@@ -34,6 +21,41 @@
       if (window.hljs) {
         window.hljs.highlightAll();
       }
+    </script>
+    <script>
+      (() => {
+        const themes = new Set(["white", "paper", "warm", "dark", "black"]);
+        const colors = {
+          white: "#ffffff",
+          paper: "#f7f5ef",
+          warm: "#efe4cf",
+          dark: "#171614",
+          black: "#000000"
+        };
+        const root = document.documentElement;
+        const options = document.querySelectorAll("[data-theme-option]");
+
+        const applyTheme = (theme) => {
+          if (!themes.has(theme)) return;
+
+          root.dataset.theme = theme;
+          document.querySelector("#theme-color")?.setAttribute("content", colors[theme]);
+          options.forEach((option) => {
+            option.setAttribute("aria-pressed", String(option.dataset.themeOption === theme));
+          });
+
+          try {
+            window.sessionStorage.setItem("reading-theme", theme);
+          } catch (error) {
+            // The selected theme still applies for the current page.
+          }
+        };
+
+        options.forEach((option) => {
+          option.addEventListener("click", () => applyTheme(option.dataset.themeOption));
+        });
+        applyTheme(root.dataset.theme || "white");
+      })();
     </script>
   </body>
 </html>

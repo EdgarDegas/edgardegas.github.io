@@ -1,35 +1,91 @@
 ---
 layout: default
 ---
+{%- assign HOME_POST_LIMIT = 3 -%}
 
 <section class="home-heading">
   <h1>{{ site.title }}</h1>
+  <div class="hero-footer">
+    <nav class="hero-nav" aria-label="主导航">
+      <a href="{{ "/archive.html" | relative_url }}">posts</a>
+      <a href="https://github.com/EdgarDegas" target="_blank" rel="noreferrer">github</a>
+      <a href="{{ "/feed.xml" | relative_url }}">rss</a>
+    </nav>
+    {%- include theme_selector.html -%}
+  </div>
 </section>
 
 <section class="content-section" id="posts" aria-labelledby="posts-heading">
   <div class="section-heading">
-    <h2 id="posts-heading">posts</h2>
-    <a class="text-link" href="{{ "/archive.html" | relative_url }}">Read more... <span aria-hidden="true">→</span></a>
+    <h2 id="posts-heading">最新</h2>
+    <a class="text-link" href="{{ "/archive.html" | relative_url }}">更多 <span aria-hidden="true">→</span></a>
   </div>
-  {%- include post_list.html limit=5 -%}
+  {%- include post_list.html limit=HOME_POST_LIMIT variant="newsletter" -%}
 </section>
 
-<section class="content-section" id="github" aria-labelledby="github-heading">
-  <div class="section-heading">
-    <h2 id="github-heading"><a href="https://github.com/EdgarDegas" target="_blank" rel="noreferrer">github</a></h2>
-  </div>
-  <div class="project-grid">
-    <a class="project-card" href="https://edgardegas.github.io/dsbridge-swift-intro.html" target="_blank" rel="noreferrer">
-      <span class="external-icon" aria-hidden="true">↗</span>
-      <h3>DSBridge-Swift</h3>
-      <p>delivering method calls between Swift and JavaScript.</p>
-    </a>
-    <a class="project-card" href="https://github.com/EdgarDegas/Slyderin/" target="_blank" rel="noreferrer">
-      <span class="external-icon" aria-hidden="true">↗</span>
-      <h3>Slyderin</h3>
-      <p>an iOS-16-styled slider.</p>
-    </a>
-  </div>
-</section>
+{%- for category_entry in site.categories -%}
+  {%- assign category_name = category_entry[0] -%}
+  {%- assign category_title = category_name -%}
+  {%- if category_name == "life" -%}
+    {%- assign category_title = "生活" -%}
+  {%- elsif category_name == "tech" -%}
+    {%- assign category_title = "技术" -%}
+  {%- elsif category_name == "repo" -%}
+    {%- assign category_title = "开源" -%}
+  {%- endif -%}
+  {%- assign category_path = "/category/" | append: category_name | append: "/" -%}
+  <section class="content-section category-section" id="category-{{ category_name | slugify }}" aria-labelledby="category-{{ category_name | slugify }}-heading">
+    <div class="section-heading">
+      <h2 id="category-{{ category_name | slugify }}-heading">{{ category_title }}</h2>
+      <a class="text-link" href="{{ category_path | relative_url }}">更多 <span aria-hidden="true">→</span></a>
+    </div>
+    {%- include post_list.html category=category_name limit=HOME_POST_LIMIT variant="table" -%}
+  </section>
+{%- endfor -%}
 
 {{ content }}
+
+<script>
+  (() => {
+    const newsletter = document.querySelector(".newsletter-post-list");
+    const description = newsletter?.querySelector(".post-card:first-child .post-card-description");
+    const primaryLink = description?.closest("a");
+    const desktop = window.matchMedia("(min-width: 761px)");
+
+    if (!newsletter || !description || !primaryLink) return;
+
+    let frame;
+    const fitDescription = () => {
+      description.classList.remove("is-clamped");
+      description.style.removeProperty("-webkit-line-clamp");
+      description.style.removeProperty("max-height");
+
+      if (!desktop.matches) return;
+
+      const linkBounds = primaryLink.getBoundingClientRect();
+      const descriptionBounds = description.getBoundingClientRect();
+      const linkStyles = getComputedStyle(primaryLink);
+      const availableHeight = linkBounds.bottom
+        - Number.parseFloat(linkStyles.paddingBottom)
+        - descriptionBounds.top;
+      const lineHeight = Number.parseFloat(getComputedStyle(description).lineHeight);
+
+      if (!availableHeight || !lineHeight || description.scrollHeight <= availableHeight + 1) return;
+
+      const visibleLines = Math.max(1, Math.floor(availableHeight / lineHeight));
+      description.style.setProperty("max-height", `${visibleLines * lineHeight}px`);
+      description.style.setProperty("-webkit-line-clamp", String(visibleLines));
+      description.classList.add("is-clamped");
+    };
+
+    const scheduleFit = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(fitDescription);
+    };
+
+    new ResizeObserver(scheduleFit).observe(newsletter);
+    desktop.addEventListener("change", scheduleFit);
+    document.fonts?.ready.then(scheduleFit);
+    scheduleFit();
+  })();
+</script>

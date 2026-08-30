@@ -1,0 +1,16 @@
+---
+layout: default
+---
+
+<section class="category-page" aria-labelledby="category-title">
+  <header class="category-page-header">
+    <nav class="breadcrumb" aria-label="面包屑导航">
+      <a href="{{ "/" | relative_url }}">首页</a>
+      <span aria-hidden="true">›</span>
+      <span aria-current="page">{{ page.title }}</span>
+    </nav>
+    <h1 id="category-title">{{ page.title }}</h1>
+  </header>
+
+  {%- include post_list.html category=page.category variant="table" -%}
+</section>

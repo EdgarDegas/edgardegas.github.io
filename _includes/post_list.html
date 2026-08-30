@@ -11,15 +11,32 @@
 {%-endif-%}
 
 {%- if posts.size > 0 -%}
-  <div class="post-list">
+  <div class="post-list{% if include.variant == "table" %} table-post-list{% elsif include.variant == "newsletter" %} newsletter-post-list{% endif %}">
     {%- for post in posts limit: include.limit -%}
       <article class="post-card">
         <a href="{{ post.url | relative_url }}" aria-label="阅读《{{ post.title }}》">
+          {%- include post_art.html variant=post.art title=post.title compact=true -%}
           <div class="post-card-meta">
-            <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: site.theme_config.date_format }}</time>
+            {%- if include.variant == "newsletter" -%}
+              {%- assign post_category_title = post.category -%}
+              {%- if post.category == "life" -%}
+                {%- assign post_category_title = "生活" -%}
+              {%- elsif post.category == "tech" -%}
+                {%- assign post_category_title = "技术" -%}
+              {%- elsif post.category == "repo" -%}
+                {%- assign post_category_title = "开源" -%}
+              {%- endif -%}
+              <span>{{ post_category_title }}</span>
+            {%- else -%}
+              <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: site.theme_config.date_format }}</time>
+            {%- endif -%}
           </div>
           <h3>{{ post.title }}</h3>
-          <span class="post-card-arrow" aria-hidden="true">→</span>
+          {%- if include.variant == "newsletter" and forloop.first -%}
+            <p class="post-card-description">{{ post.description | default: post.excerpt | strip_html | strip_newlines }}</p>
+          {%- else -%}
+            <p class="post-card-description">{{ post.description | default: post.excerpt | strip_html | strip_newlines | truncate: 140 }}</p>
+          {%- endif -%}
         </a>
       </article>
     {%- endfor -%}

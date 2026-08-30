@@ -1,29 +1,48 @@
 ---
 layout: default
 ---
-
-{%-include back_link.html-%}
+{%- assign category_title = page.category -%}
+{%- if page.category == "life" -%}
+  {%- assign category_title = "生活" -%}
+{%- elsif page.category == "tech" -%}
+  {%- assign category_title = "技术" -%}
+{%- elsif page.category == "repo" -%}
+  {%- assign category_title = "开源" -%}
+{%- endif -%}
+{%- assign category_path = "/category/" | append: page.category | append: "/" -%}
 
 <article class="article-shell">
+  <div class="article-art-stage article-art-stage--{{ page.art | default: "default" }}">
+    {%- include post_art.html variant=page.art title=page.title -%}
+  </div>
+
   <header class="article-header">
-    <div class="article-meta">
-      <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: site.theme_config.date_format }}</time>
-    </div>
+    <nav class="breadcrumb" aria-label="面包屑导航">
+      <a href="{{ "/" | relative_url }}">首页</a>
+      {%- if page.category -%}
+        <span aria-hidden="true">›</span>
+        <a href="{{ category_path | relative_url }}">{{ category_title }}</a>
+      {%- endif -%}
+    </nav>
     <h1>{{ page.title }}</h1>
+    {%- if page.description -%}
+      <p class="article-description">{{ page.description }}</p>
+    {%- endif -%}
+    <div class="article-meta">
+      <div class="article-meta-primary">
+        {%- if page.disc_url -%}
+          <a class="button button-secondary article-meta-action" href="{{ page.disc_url }}">点赞 / 评论</a>
+        {%- endif -%}
+        <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: site.theme_config.date_format }}</time>
+      </div>
+      {%- include theme_selector.html -%}
+    </div>
   </header>
 
   <div class="prose">
     {{ content }}
   </div>
 
-  <footer class="article-footer">
-    <div class="article-actions">
-      {%- if page.disc_url -%}
-        <a class="button button-primary" href="{{ page.disc_url }}">点赞本文或发表评论</a>
-      {%- endif -%}
-      <a class="button button-secondary" href="https://github.com/EdgarDegas/edgardegas.github.io/discussions/new?category=anything">任意发表你的看法</a>
-    </div>
-  </footer>
 </article>
 
 <script type="text/javascript" src="/assets/js/hljs.js"></script>
