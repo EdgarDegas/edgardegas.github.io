@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 字幕翻译中的信息揭示顺序
+disc_url: https://github.com/EdgarDegas/edgardegas.github.io/discussions/13
 description: 字幕不仅要准确传达内容，也应尽量让译文中的人物身份、证据与关键事实按照原文的顺序出现
 locale: zh_Hans
 ---

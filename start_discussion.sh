@@ -1,64 +1,133 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-if [ $# -ne 2 ]; then
-    echo "Usage: $0 <path to post file> <token>"
+set -euo pipefail
+
+if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
+    echo "Usage: $0 <path to post file> [token]" >&2
     exit 1
 fi
 
 file_path="$1"
-token="$2"
+token="${2:-${GH_TOKEN:-}}"
 
-# post URL
-file_name=$(basename "$file_path")
-file_name="${file_name%.*}"
-file_name="${file_name// /-}"
-
-file_title=$(basename "$file_path" | cut -d '-' -f 4- | sed 's/ /-/g' | sed 's/\.md$//')
-file_title=$(echo "$file_title" | tr '[:upper:]' '[:lower:]')
-url="https://edgardegas.github.io/${file_title}.html"
-
-# discussion.title
-title=$(grep -m 1 "^title: " "$1" | sed 's/^title: //')
-
-# discussion.body
-if [[ $title =~ ^[[:ascii:]]*$ ]]; then
-  # 如果是ASCII字符，构造body
-  body="Leave your comment on [${title}](${url})."
-else
-  # 如果不是ASCII字符，构造body
-  body="请在此处发表对[${title}](${url})的评论。"
+if [ ! -f "$file_path" ]; then
+    echo "Error: Post not found: $file_path" >&2
+    exit 1
 fi
 
-graphql_request=$(cat <<EOF
-mutation {
+if [ -z "$token" ]; then
+    echo "Error: Set GH_TOKEN or provide a token as the second argument." >&2
+    exit 1
+fi
+
+for command in curl jq; do
+    if ! command -v "$command" >/dev/null 2>&1; then
+        echo "Error: Required command not found: $command" >&2
+        exit 1
+    fi
+done
+
+existing_url=$(sed -n 's/^disc_url:[[:space:]]*//p' "$file_path" | head -n 1)
+if [ -n "$existing_url" ]; then
+    echo "$existing_url"
+    exit 0
+fi
+
+file_name=$(basename "$file_path")
+if [[ ! "$file_name" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}-(.+)\.md$ ]]; then
+    echo "Error: Post name must use YYYY-MM-DD-slug.md: $file_name" >&2
+    exit 1
+fi
+
+slug="${BASH_REMATCH[1]}"
+post_url="https://edgardegas.github.io/${slug}.html"
+
+title=$(sed -n 's/^title:[[:space:]]*//p' "$file_path" | head -n 1)
+if [ -z "$title" ]; then
+    echo "Error: Post front matter has no title." >&2
+    exit 1
+fi
+
+if [[ "$title" =~ ^[[:ascii:]]*$ ]]; then
+    body="Leave your comment on [${title}](${post_url})."
+else
+    body="请在此处发表对[${title}](${post_url})的评论。"
+fi
+
+read -r -d '' query <<'GRAPHQL' || true
+mutation($repositoryId: ID!, $categoryId: ID!, $title: String!, $body: String!) {
   createDiscussion(input: {
-    repositoryId: "R_kgDOLj4p9A",
-    categoryId: "DIC_kwDOLj4p9M4CeSpb",
-    title: "$title",
-    body: "$body"
+    repositoryId: $repositoryId
+    categoryId: $categoryId
+    title: $title
+    body: $body
   }) {
     discussion {
       url
     }
   }
 }
-EOF
-)
+GRAPHQL
 
-graphql_request=$(echo "$graphql_request" | jq -sRr '@json')
+payload=$(jq -n \
+    --arg query "$query" \
+    --arg repository_id "R_kgDOLj4p9A" \
+    --arg category_id "DIC_kwDOLj4p9M4CeSpb" \
+    --arg title "$title" \
+    --arg body "$body" \
+    '{
+      query: $query,
+      variables: {
+        repositoryId: $repository_id,
+        categoryId: $category_id,
+        title: $title,
+        body: $body
+      }
+    }')
 
-response=$(curl -s -X POST \
+response=$(curl --fail --silent --show-error \
+    -X POST \
     -H "Authorization: Bearer $token" \
     -H "Content-Type: application/json" \
-    -d "{\"query\": $graphql_request}" \
+    -d "$payload" \
     https://api.github.com/graphql)
 
-url_value=$(echo "$response" | jq -r '.data.createDiscussion.discussion.url')
-
-echo $url_value
-
-if grep -q "^disc_url: " "$file_path"; then
-  sed -i "s|^disc_url: .*|disc_url: $url_value|" "$file_path"
-else
-  sed -i "/^title: /a disc_url: $url_value" "$file_path"
+discussion_url=$(jq -r '.data.createDiscussion.discussion.url // empty' <<<"$response")
+if [ -z "$discussion_url" ]; then
+    echo "Error: GitHub did not create the discussion." >&2
+    jq -c '{errors: .errors}' <<<"$response" >&2
+    exit 1
 fi
+
+temporary_file=$(mktemp)
+trap 'rm -f "$temporary_file"' EXIT
+
+awk -v discussion_url="$discussion_url" '
+    NR == 1 && $0 == "---" {
+        in_front_matter = 1
+    }
+
+    in_front_matter && /^title:[[:space:]]/ && !inserted {
+        print
+        print "disc_url: " discussion_url
+        inserted = 1
+        next
+    }
+
+    {
+        print
+    }
+
+    NR > 1 && in_front_matter && $0 == "---" {
+        in_front_matter = 0
+    }
+
+    END {
+        if (!inserted) {
+            exit 2
+        }
+    }
+' "$file_path" >"$temporary_file"
+
+cat "$temporary_file" >"$file_path"
+echo "$discussion_url"
