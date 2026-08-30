@@ -1348,6 +1348,12 @@ th {
     border-bottom: 1px dashed var(--border);
   }
 
+  .newsletter-post-list .post-card:nth-child(2),
+  .newsletter-post-list .post-card:nth-child(3) {
+    grid-row: auto;
+    grid-column: auto;
+  }
+
   .newsletter-post-list .post-card:last-child {
     border-bottom: 0;
   }
@@ -1430,11 +1436,6 @@ th {
 
   .article-art-stage > .article-art.article-art {
     width: min(100% - 1.25rem, var(--content-width));
-  }
-
-  .section-heading {
-    align-items: flex-start;
-    flex-direction: column;
   }
 
 }
