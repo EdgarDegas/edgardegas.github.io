@@ -25,3 +25,19 @@ sass:
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
+
+exclude:
+  - .bundle
+  - .jekyll-cache
+  - .sass-cache
+  - AGENTS.md
+  - Dockerfile
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - compose.yaml
+  - node_modules
+  - no-style-please.gemspec
+  - start.sh
+  - start_discussion.sh
+  - vendor
