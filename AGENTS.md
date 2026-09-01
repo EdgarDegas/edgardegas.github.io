@@ -17,21 +17,24 @@ This repository is a Jekyll blog. Treat files in `_posts/` as the source of trut
   locale: zh_Hans
   disc_url: https://github.com/EdgarDegas/edgardegas.github.io/discussions/NUMBER
   category: repo
+  art: article-variant
   ---
   ```
 
-  `layout` and `title` are required. Use `description` and `locale` for normal articles. `disc_url` and `category` are optional; omit them instead of leaving empty values. Quote YAML values when punctuation could be parsed as YAML syntax.
+  `layout` and `title` are required. Use `description`, `locale`, and a unique `art` variant for normal articles. `disc_url` and `category` are optional; omit them instead of leaving empty values. Quote YAML values when punctuation could be parsed as YAML syntax.
 
 ## Write and edit
 
 - Preserve the article's language, tone, technical meaning, and Markdown style. Most current articles are Simplified Chinese technical essays.
 - Follow the existing posts by using `#` for top-level article sections. Do not repeat the article title in the Markdown body; the post layout renders the front-matter title.
 - Use fenced code blocks with a language identifier such as `swift`, `c`, or `text`.
-- Link to another post with Jekyll's stable form: `{% post_url YYYY-MM-DD-slug %}`. Use ordinary Markdown links for external sources.
+- Link to another post with Jekyll's stable form: `{% post_url YYYY-MM-DD-slug %}`. Use ordinary Markdown links for external sources. Write GitHub links as HTML anchors with `target="_blank"` and `rel="noopener noreferrer"` so they open in a new tab.
 - For translations, retain clear source and author attribution near the beginning of the article.
 - Do not modify unrelated prose while making a targeted correction. Avoid reformatting an entire article just to change a small passage.
 
 ## Images and other assets
+
+- Every normal article needs an `art` front-matter value and a matching CSS variant in `_sass/no-style-please.scss`. Reuse `_includes/post_art.html` so the same artwork appears in the article header and compact post cards. Prefer this CSS artwork system over raster header images unless a raster image is explicitly requested.
 
 - Put article-specific images in `_posts/YYYY-MM-DD-slug.assets/`, matching the post filename without `.md`.
 - Reference them relatively from the article, for example:
@@ -53,7 +56,7 @@ This repository is a Jekyll blog. Treat files in `_posts/` as the source of trut
 
 ## Publish an article
 
-1. Complete and verify the post, including its intended publication date and optional category.
+1. Complete and verify the post, including its intended publication date, optional category, and unique CSS header artwork.
 2. Unless the user opts out, load `GH_TOKEN` without printing it and run `./start_discussion.sh ./_posts/YYYY-MM-DD-slug.md` before committing.
 3. Confirm that `disc_url` points to the newly created or existing GitHub Discussion.
 4. Run the checks in “Verify changes” below.
@@ -73,7 +76,7 @@ This repository is a Jekyll blog. Treat files in `_posts/` as the source of trut
 
 Before handing off article changes:
 
-1. Check that front matter has matching opening and closing `---` lines and valid YAML.
+1. Check that front matter has matching opening and closing `---` lines and valid YAML. Confirm a normal article's `art` value has matching stage and artwork selectors in `_sass/no-style-please.scss`.
 2. Confirm internal `{% post_url ... %}` targets and local image paths exist.
 3. Review the diff for accidental prose changes, secrets, editor files, or generated `_site/` output.
 4. Run `bundle exec jekyll build` from the repository root. If dependencies are not installed, report that clearly rather than committing generated output.

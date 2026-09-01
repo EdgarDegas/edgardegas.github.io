@@ -31,7 +31,7 @@ layout: default
     <div class="article-meta">
       <div class="article-meta-primary">
         {%- if page.disc_url -%}
-          <a class="button button-secondary article-meta-action" href="{{ page.disc_url }}">点赞 / 评论</a>
+          <a class="button button-secondary article-meta-action" href="{{ page.disc_url }}" target="_blank" rel="noopener noreferrer">点赞 / 评论</a>
         {%- endif -%}
         <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: site.theme_config.date_format }}</time>
       </div>
