@@ -46,3 +46,25 @@ layout: default
 </article>
 
 <script type="text/javascript" src="/assets/js/hljs.js"></script>
+<script>
+  (() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    document.querySelectorAll(".article-art").forEach((art) => {
+      let resetTimer;
+
+      art.addEventListener("pointerdown", (event) => {
+        if (event.pointerType === "mouse") return;
+
+        window.clearTimeout(resetTimer);
+        art.classList.remove("is-touch-active");
+        window.requestAnimationFrame(() => {
+          art.classList.add("is-touch-active");
+          resetTimer = window.setTimeout(() => {
+            art.classList.remove("is-touch-active");
+          }, 700);
+        });
+      }, { passive: true });
+    });
+  })();
+</script>

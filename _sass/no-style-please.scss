@@ -501,6 +501,7 @@ img {
   border: 1px solid var(--border);
   border-radius: 2.5cqi;
   background: var(--muted);
+  touch-action: pan-y;
 }
 
 .article-art::before {
@@ -713,19 +714,19 @@ img {
   transform: rotate(224deg);
 }
 
-.article-art--subtitles:hover .article-art-shape:nth-child(1) {
+.article-art--subtitles:is(:hover, :active, .is-touch-active) .article-art-shape:nth-child(1) {
   transform: translateX(0.8cqi);
 }
 
-.article-art--subtitles:hover .article-art-shape:nth-child(3) {
+.article-art--subtitles:is(:hover, :active, .is-touch-active) .article-art-shape:nth-child(3) {
   transform: translateX(0.8cqi);
 }
 
-.article-art--subtitles:hover .article-art-shape:nth-child(4) {
+.article-art--subtitles:is(:hover, :active, .is-touch-active) .article-art-shape:nth-child(4) {
   transform: translateX(0.5cqi);
 }
 
-.article-art--subtitles:hover .article-art-shape:nth-child(5) {
+.article-art--subtitles:is(:hover, :active, .is-touch-active) .article-art-shape:nth-child(5) {
   transform: translateX(-0.5cqi);
 }
 
